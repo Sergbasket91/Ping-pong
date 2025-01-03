@@ -36,20 +36,33 @@ class Racket(GameSprite):
 racket_l = Racket('racket.png', 0, 230, 5, 30, 150)
 racket_r = Racket('racket.png', 670, 230, 5, 30, 150)
 
+ball = GameSprite('tenis_ball.png', 330, 230, 3, 50, 50)
+finish = False
+speed_x = 3
+speed_y = 3
 
-# class Ball(GameSprite):
-#     def update(self):
-#         self.rect.y += self.speed
-#         if self.rect.y >= 500:
-#             self.rect.y = 0
-#             lost += 1
-#             self.rect.x = randint(50, 650)
-
+text = font.Font(None, 35)
+lose_l = text.render('Игрок 1 проиграл!', True, (255, 0, 0))
+lose_r = text.render('Игрок 2 проиграл!', True, (255, 0, 0))
 
 while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
+    
+    if not finish:
+        ball.rect.x += speed_x
+        ball.rect.y += speed_y
+    if ball.rect.y <= 0 or ball.rect.y >= 450:
+        speed_y *= -1
+    if sprite.collide_rect(racket_l, ball) or sprite.collide_rect(racket_r, ball):
+        speed_x *= -1
+    if ball.rect.x >= 650:
+        finish = True
+        main_win.blit(lose_r, (200, 200))
+    if ball.rect.x <= 0:
+        finish = True
+        main_win.blit(lose_l, (200, 200))
     
     racket_l.reset()
     racket_l.update_l()
@@ -57,6 +70,7 @@ while game:
     racket_r.reset()
     racket_r.update_r()
 
+    ball.reset()
 
     display.update()
     main_win.fill((51, 102, 204))
